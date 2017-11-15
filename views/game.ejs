@@ -1,0 +1,620 @@
+<!-- game.ejs -->
+<!doctype html>
+<html>
+<head>
+    <title>Adventures of Bobby B</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script
+			src="http://code.jquery.com/jquery-3.2.1.min.js"
+			integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+			crossorigin="anonymous">
+	</script>
+</head>
+<body>
+
+<script>
+$(document).ready(start);
+
+var characterData = {
+bobby : {
+    name: 'King Robert Baratheon',
+    hitPoints: 100,
+    hitChance: .75,
+    weapon: 'warhammer',
+    damage: 10,
+    drunkenness: 50
+	},
+
+ned : {
+    name: 'Lord Eddard Stark, Warden of the North',
+    alive: true,
+    hitPoints: 100,
+    hitChance: .3,
+    weapon: 'the Valyrian greatsword Ice',
+    damage: 50
+	},
+
+jaime : {
+    name: 'Ser Jaime Lannister the Kingslayer',
+    alive: true,
+    hitPoints: 150,
+    hitChance: .2,
+    weapon: 'the Valyrian longsword Oathkeeper',
+    damage: 35
+	},
+
+dothraki : {
+    name: 'A DOTHRAKI HORDE, ON AN OPEN FIELD',
+    alive: true,
+    hitPoints: 10000,
+    hitChance: 1,
+    weapon: 'spear',
+    damage: 15,
+	},
+
+tyrion : {
+    name: 'Tyrion Lannister',
+    alive: true,
+    drunkenness: 25
+	},
+
+oberyn : {
+    name: 'Oberyn Martell, the Red Viper',
+    alive: true,
+    hitPoints: 100,
+    hitChance: .75,
+    weapon: 'poisoned spear',
+    damage: 20
+	}
+}
+
+var sceneNodeData = {
+	sceneNode0 : {
+    sceneId: 0,
+    sceneStaging: 'You are standing in an open field, about to meet the Dothraki in battle.',
+    sceneNorth: 'Go North',
+    northGoTo: 1,
+    sceneSouth: 'Go South',
+    southGoTo: 3,
+    sceneEast: 'Go East',
+    eastGoTo: 7,
+    sceneWest: 'Go West',
+    westGoTo: 8
+	},
+
+var sceneNode1 = {
+    sceneId: 1,
+    sceneStaging: 'You head north, and you see Ned.',
+    sceneNorth: 'Ask Ned to be your Hand',
+    northGoTo: 2,
+    sceneSouth: 'Forget the poor Stark, who has suffered enough. Return South.',
+    southGoTo: 0,
+    sceneEast: 'Keep heading North! Time to check out the Wall with your brother-in-law, Tyrion Lannister',
+    eastGoTo: 9,
+    sceneWest: 'Attack Ned!',
+    westGoTo: 10
+}
+
+var sceneNode2 = {
+    sceneId: 2,
+    sceneStaging: 'Ned accepts, but begrudgingly. He has now joined your party, along with his two young daughters Arya and Sansa, as well as his loyal captain Jory Cassel, and is returning with you to the Red Keep. You are on the Kingsroad.',
+    sceneNorth: 'Discuss Daenarys Targaryen',
+    northGoTo: 4,
+    sceneSouth: 'Check up on your... er... son. Joffrey Baratheon.',
+    southGoTo: 11,
+    sceneEast: 'Realistic travel times?? That is so five seasons ago. Time to get drunk, pass out, and GET ON WITH IT!! Before you piss yeself.',
+    eastGoTo: 14,
+    sceneWest: 'Confront Jaime Lannister and ask if he is banging your wife who is also his sister.',
+    westGoTo: 12
+}
+
+var sceneNode3 = {
+    sceneId: 3,
+    sceneStaging: 'You head South to Dorne. Oberyn is here. He brandishes his spear and yells "YOU RAPED HER, YOU KILLED HER, YOU MURDERED HER CHILDREN." Ready yourself for battle!',
+    sceneNorth: 'Brandish your battlehammer and don your great antlered helm, because it is time to kick some ass.',
+    northGoTo: 13,
+    sceneSouth: 'Flee, like the coward you are!',
+    southGoTo: 0,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode4 = {
+    sceneId: 4,
+    sceneStaging: 'You tell Ned that you are concerned about the stories of the Targaryen girl being married off to Khal Drogo, King of the Dothraki. He is mortified, and he protests that Daenaerys is just a little girl.',
+    sceneNorth: 'THE WHOOOOOOORE IS PREGNANT!!',
+    northGoTo: 5,
+    sceneSouth: 'I agree, Ned. Let us not task Varys with arranging an assassination attempt, and therefore waste two seasons worth of time on irrelevant B-plots.',
+    southGoTo: 6,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode5 = {
+    sceneId: 5,
+    sceneStaging: '"THE WHOOOOOOORE IS PREGNANT!!" Ned furrows his brow and retorts, "You are speaking of murdering a CHILD!"',
+    sceneNorth: 'I warned you this would happen, back in the North. I warned you, but you dinnae care to hear. Well hear it now. I want them both DEAD! Mother and child both, and that fool Viserys as well. Is that plain enough for you? I want them both dead.',
+    northGoTo: 15,
+    sceneSouth: 'Yer... yer right. Murdering a child, especially a little girl, would be beneath the honor of a Baratheon, especially my brother Stannis, and especially if it is for some strange and completely unjustifiable religious ritual involving the sacrifice of his own daughter, no less.',
+    southGoTo: 6,
+    sceneEast: 'Pah! I would kill any descendant of Rhaegar Targaryen! He took my Lyanna from me!! Oh, and how is that bastard of yours anyway?',
+    eastGoTo: 9,
+    sceneWest: 'We shall continue this discussion later, let us cool our heads with wine so that we may speak with reason. LET US GET DRUNK!!',
+    westGoTo: 8
+}
+
+var sceneNode6 = {
+    sceneId: 6,
+    sceneStaging: '"I agree, Ned" you say, "Let us not task Varys with arranging an assassination attempt, and therefore waste two seasons worth of time on irrelevant B-plots." Ned nods, "Okay... so then what?"',
+    sceneNorth: 'Let us host a tournament! For some strange reason I feel very hyped about a duel between the Mountain and the Hound.',
+    northGoTo: 16,
+    sceneSouth: 'I am going to legitimize all my bastards fathered from the whores I visited, and then this story will REALLY get messy!',
+    southGoTo: 17,
+    sceneEast: 'Let us travel with my brother-in-law Tyrion up to Castle Black, so that I may meet the bastard Jon Snow and discover his true heritage, whaddaya say, Ned?',
+    eastGoTo: 9,
+    sceneWest: 'LET US GET DRUNK!!',
+    westGoTo: 8
+}
+
+var sceneNode7 = {
+    sceneId: 7,
+    sceneStaging: 'You head east, to meet the Dothraki on an open field. PREPARE FOR BATTLE!',
+    sceneNorth: 'Even your drunk ass noted that it would be stupid to meet the Dothraki on an open field. FLEE!',
+    northGoTo: 0,
+    sceneSouth: 'So what if these horsefuckers were inspired by the greatest horde known to mankind who managed to conquer practically the entirety of the Eurasian megacontinent? Your obese ass could take them.',
+    southGoTo: 20,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode8 = {
+    sceneId: 8,
+    sceneStaging: 'You head west, to the Westerlands, and now you are standing outside of Casterly Rock. Tyrion is here. Time to get DRUNK!',
+    sceneNorth: 'Ask Tyrion to drink with you.',
+    northGoTo: 21,
+    sceneSouth: 'Ask Tyrion to get hammered with you.',
+    southGoTo: 21,
+    sceneEast: 'Ask Tyrion to get as blitzed as a Westerosi Winter with you.',
+    eastGoTo: 21,
+    sceneWest: 'You have an ominous feeling that somehow your alcoholism will be the end of you, and decide to back off.',
+    westGoTo: 0
+}
+
+var sceneNode9 = {
+    sceneId: 9,
+    sceneStaging: 'Ned tells you that Jon Snow is doing well and that he has Taken the Black. You cannot see how a vow of celibacy could ever be considered "doing well". Nonetheless you decide to join your brother-in-law, the dwarf Tyrion, to visit the Wall and talk to Jon Snow. The rest of the royal family returns to the Red Keep. Ned, Arya, Sansa, Jory, Cersei, Jaime, Joffrey, Myrcella and Tommen and have left your party.',
+    sceneNorth: 'Ask Jon Snow about how he enjoys being a part of the Watch',
+    northGoTo: null,
+    sceneSouth: '"YOU KNOW NOTHING, JON SNOW"',
+    southGoTo: null,
+    sceneEast: 'Say Jon, you look an awful like my dearest love Lyanna, except if I were to do some back of the napkin calculations, you would have been born around the same time Ned killed Rhaegar Targaryen in the Tower of Joy...',
+    eastGoTo: null,
+    sceneWest: 'Attack Jon Snow',
+    westGoTo: null
+}
+
+var sceneNode10 = {
+    sceneId: 10,
+    sceneStaging: '"You were never my brother!" You spit at Ned. "Prepare to die!" Ned shakes his head "After all we have been through together, Robert..."',
+    sceneNorth: 'Maybe you ought to reconsider this course of action. It makes zero narrative sense, and also Ned has kept significantly more fit than you into his middle age, and he also wields the Valyrian greatsword Ice...',
+    northGoTo: 1,
+    sceneSouth: 'Time to show House Stark who their Daddy is. What time is it? It is HAMMER TIME.',
+    southGoTo: 19,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null,
+}
+
+var sceneNode11 = {
+    sceneId: 11,
+    sceneStaging: 'You head back towards the tail end of the royal entourage and you notice that your er... "son" Joffrey is bullying the Stark girl, Arya! He is waving his sword around threatening her. Do you...',
+    sceneNorth: 'Intervene',
+    northGoTo: null,
+    sceneSouth: 'Sit back and watch',
+    southGoTo: null,
+    sceneEast: 'Ignore the both of them and return to your carriage',
+    eastGoTo: 2,
+    sceneWest: 'Encourage them to fight, clearly the best decision a parent could be making right now',
+    westGoTo: null,
+}
+
+var sceneNode12 = {
+    sceneId: 12,
+    sceneStaging: 'You confront Ser Jaime. You ask him "Ser Jaime, have you been fucking my wife, the Queen?" Jaime looks at you squarely in the eyes and responds with a simple "Nope."',
+    sceneNorth: '"Come on, cut the bullshit, those who have not read the first book have at least seen the first episode and know that you pushed Bran out the window to preserve the secret of your Wincest!"',
+    northGoTo: 18,
+    sceneSouth: '"Alright then, I totally believe you, despite the fact that none of my supposed biological children resemble me, as well as my unfortunate penchant for hiring sex workers instead of making love to my scheming bitch of a wife.',
+    southGoTo: 2,
+    sceneEast: '"How would you like to GET DRUNK?"',
+    eastGoTo: 8,
+    sceneWest: 'Attack Ser Jaime',
+    westGoTo: 18
+}
+
+var sceneNode13 = {
+    sceneId: 13,
+    sceneStaging: 'Oberyn Martell lays dead in front of you, his head crushed into bloody pulp. Fragments of brain and skull still stain your battlehammer.',
+    sceneNorth: 'Nothing left to do here in Dorne, return to the crossroads.',
+    northGoTo: 0,
+    sceneSouth: null,
+    southGoTo: null,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode14 = {
+    sceneId: 14,
+    sceneStaging: 'You reach Kings Landing',
+    sceneNorth: null,
+    northGoTo: null,
+    sceneSouth: null,
+    southGoTo: null,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode15 = {
+    sceneId: 15,
+    sceneStaging: 'I warned you back up north...',
+    sceneNorth: null,
+    northGoTo: null,
+    sceneSouth: null,
+    southGoTo: null,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode16 = {
+    sceneId: 16,
+    sceneStaging: 'Everybody GET HYPE. Because it is time for CLEGANEBOWL.',
+    sceneNorth: null,
+    northGoTo: null,
+    sceneSouth: null,
+    southGoTo: null,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode17 = {
+    sceneId: 17,
+    sceneStaging: 'You decide to legimitize all your bastards.',
+    sceneNorth: null,
+    northGoTo: null,
+    sceneSouth: null,
+    southGoTo: null,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode18 = {
+    sceneId: 18,
+    sceneStaging: 'Well this is fucked. You have slain your own Kingsguard and brother-in-law. The body of Jaime Lannister lays broken at your feet, shattered from the trauma of repeated heavy blunt force. You will be sleeping in the doghouse tonight...',
+    sceneNorth: 'Return to your entourage and continue travelling on the Kingsroad',
+    northGoTo: 2,
+    sceneSouth: null,
+    southGoTo: null,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode19 = {
+    sceneId: 19,
+    sceneStaging: 'Good job slaying your best friend and only ally, you psychotic fuck. Ned lays dead at your feet, his body crushed and mangled by repeated warhammer strikes.',
+    sceneNorth: 'Return to the crossroads. You get the feeling that you now have severely limited options for the rest of this playthrough.',
+    northGoTo: 0,
+    sceneSouth: null,
+    southGoTo: null,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode20 = {
+    sceneId: 20,
+    sceneStaging: 'You have miraculously slaughtered every last one of the Dothraki. On an open field, no less. Limbs, both human and equine, lay strewn everywhere. You are either supremely lucky, or you cheated by altering variables using the javascript console.',
+    sceneNorth: null,
+    northGoTo: null,
+    sceneSouth: null,
+    southGoTo: null,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null
+}
+
+var sceneNode21 = {
+    sceneId: 21,
+    sceneStaging: 'Your Grace, and my dear brother-in-law, by the Gods would I be happy to drink with you. Or with anyone for that matter, including myself. Say, would you like to partake in a drinking game?',
+    sceneNorth: 'Why, yes indeed I do my good dwarf.',
+    northGoTo: 22,
+    sceneSouth: 'Despite the fact that both my stature and body mass index are both many times greater than yours, I have the feeling that this will somehow be lethal. I shall pass.',
+    southGoTo: 8,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null,
+}
+
+var sceneNode22 = {
+    sceneId: 22,
+    sceneStaging: 'You are in some dingy pub deep within the hearth of Casterly Rock',
+    sceneNorth: null,
+    northGoTo: null,
+    sceneSouth: null,
+    southGoTo: null,
+    sceneEast: null,
+    eastGoTo: null,
+    sceneWest: null,
+    westGoTo: null,
+}
+
+var sceneArray = [sceneNode0, sceneNode1, sceneNode2, sceneNode3, sceneNode4, sceneNode5, sceneNode6, sceneNode7, sceneNode8, sceneNode9, sceneNode10, sceneNode11, sceneNode12, sceneNode13, sceneNode14, sceneNode15, sceneNode16, sceneNode17, sceneNode18, sceneNode19, sceneNode20, sceneNode21, sceneNode22];
+
+var northGoTo = 0;
+var southGoTo = 0;
+var westGoTo = 0;
+var eastGoTo = 0;
+var currentNode = 0;
+
+
+function start() {
+    $.get('backend/character.php').done(createCharacters).fail(fail);
+    $.get('backend/scene.php').done(firstStaging).fail(fail);
+}
+
+function createCharacters(chardata){
+    characterData = JSON.parse(chardata);
+}
+
+function firstStaging(data) {
+    staging();
+    $('#north').click(goNorth);
+    $('#south').click(goSouth);
+    $('#east').click(goEast);
+    $('#west').click(goWest);
+}
+
+function staging() {
+
+    for (var counter = 0; counter < sceneArray.length; counter++) {
+
+        if (currentNode == counter) {
+
+            $('#stage').html(sceneNodeData[counter].sceneStaging);
+            $('#north').html(sceneNodeData[counter].sceneNorth);
+            $('#south').html(sceneNodeData[counter].sceneSouth);
+            $('#east').html(sceneNodeData[counter].sceneEast);
+            $('#west').html(sceneNodeData[counter].sceneWest);
+            northGoTo = sceneNodeData[counter].northGoTo;
+            southGoTo = sceneNodeData[counter].southGoTo;
+            eastGoTo = sceneNodeData[counter].eastGoTo;
+            westGoTo = sceneNodeData[counter].westGoTo;
+        }
+    }
+    for (var counter2 = 0; counter2 < characterData.length; counter2++){
+        if (currentNode == characterData[counter2].fightScene && characterData[counter2].hitPoints > 0) {
+            battle(characterData[counter2]);
+        }
+    }
+    //this is the old javascript code (pre-PHP) for reference:
+    //if (currentNode === 13 && oberyn.alive) {
+    //     battle(oberyn);
+    // }
+    // if (currentNode === 18 && jaime.alive) {
+    //     battle(jaime);
+    // }
+    // if (currentNode === 19 && ned.alive) {
+    //     battle(ned);
+    // }
+    // if (currentNode === 20 && dothraki.alive) {
+    //     battle(dothraki);
+    // }
+}
+
+function goNorth() {
+    currentNode = northGoTo;
+    staging();
+    if (currentNode == 22) {
+        drinkingGame(characterData[5]);
+    }
+}
+
+//characterData[5] is Tyrion Lannister
+
+function goSouth() {
+    currentNode = southGoTo;
+    staging();
+}
+
+function goWest() {
+    currentNode = westGoTo;
+    staging();
+}
+
+function goEast() {
+    currentNode = eastGoTo;
+    staging();
+}
+
+//note for battle function: characterData[1] is Bobby B
+
+function battle(character) {
+    while (character.hitPoints > 0 && characterData[1].hitPoints > 0) {
+        if (Math.random() <= character.hitChance) {
+            character.hitPoints -= characterData[1].damage;
+            $('<p class="battlelog">you strike ' + character.name + ' with ' + characterData[1].weapon + ' for ' + characterData[1].damage + ' leaving ' + character.hitPoints + ' HP remaining<p>').insertAfter('#stage');
+        } else {
+            $('<p class="battlelog">you missed ' + character.name + '<p>').insertAfter('#stage');
+        }
+        if (Math.random() <= characterData[1].hitChance) {
+            characterData[1].hitPoints -= character.damage;
+            $('<p class="battlelog">' + character.name + ' strikes you with ' + character.weapon + ' for ' + character.damage + ' leaving ' + characterData[1].hitPoints + ' HP remaining<p>').insertAfter('#stage');
+        } else {
+            $('<p class="battlelog">' + character.name + ' missed you<p>').insertAfter('#stage');
+        }
+        if (character.hitPoints <= 0) {
+            $('#stage').html(character.name + ' lays dead in front of you.');
+            $('#north').html('Continue');
+            northGoTo = currentNode;
+            $('#north').click(clearBattleLogs);
+        }
+        if (characterData[1].hitPoints <= 0) {
+            gameover();
+        }
+    }
+}
+
+function clearBattleLogs() {
+    $(".battlelog").remove();
+    for (var counter = 0; counter < characterData.length; counter++){
+        if (characterData[counter].hitPoints <= 0){
+            homeNode = characterData[counter].homeNode;
+            if (characterData[counter].fightDirection == 'northGoTo') {
+                sceneNodeData[homeNode].northGoTo = characterData[counter].fightScene;
+            }
+            if (characterData[counter].fightDirection == 'southGoTo') {
+                sceneNodeData[homeNode].southGoTo = characterData[counter].fightScene;
+            }
+            if (characterData[counter].fightDirection == 'eastGoTo') {
+                sceneNodeData[homeNode].eastGoTo = characterData[counter].fightScene;
+            }
+            if (characterData[counter].fightDirection == 'westGoTo') {
+                sceneNodeData[homeNode].westGoTo = characterData[counter].fightScene;
+            }
+        }
+    }
+//this is the old javascript code (pre-PHP) for reference:
+//     if (oberyn.alive === false) {
+//         sceneNode0.southGoTo = 13;
+//     }
+//     if (ned.alive === false) {
+//         sceneNode0.northGoTo = 19;
+//     }
+//     if (jaime.alive === false) {
+//         sceneNode2.westGoTo = 18;
+//     }
+}
+
+function drinkingGame(character) {
+    console.log('inside drinkingGame');
+
+    var bobbyDrinks = 0;
+    var rivalDrinks = 0;
+
+    function breathalyzer(){
+        console.log(characterData[1].drunkenness);
+        $('#drinkingGame').html('You are ' + characterData[1].drunkenness + '/100 drunk, and ' + character.name + ' is ' + character.drunkenness + '/100 drunk.');
+        if (characterData[1].drunkenness > 100) {
+            $('#drinkingGame').html('You start vomiting blood, the world goes fuzzy, and you pass out from alcohol poisoning. Then you start choking in your own vomit. GAME OVER.');
+            $('.drink').remove();
+            gameover();
+        }
+        if (character.drunkenness > 100) {
+            $('#drinkingGame').html(character.name + ' starts vomiting blood, and passes out from alcohol poisoning, before choking on vomit and dying.');
+            character.hitPoints = 0;
+        }
+    }
+
+    function rivalsTurn(){
+        character.drunkenness -= 0;
+        var rivalRoll = Math.random();
+        if (rivalRoll <= .33){
+            rivalDrinks += 1;
+            character.drunkenness += 10;
+        }
+        if (rivalRoll >= .66){
+            rivalDrinks += 2;
+            character.drunkenness += 25;
+        }
+        else {
+            rivalDrinks += 3;
+            character.drunkenness += 45;
+        }
+    }
+
+    breathalyzer();
+    $('<button id="vomit" class="drink">Force yourself to vomit.</button>').insertAfter('#drinkingGame');
+    $('<button id="drinkThree" class="drink">Drink three glasses of wine.</button>').insertAfter('#drinkingGame');
+    $('<button id="drinkTwo" class="drink">Drink two glasses of wine.</button>').insertAfter('#drinkingGame');
+    $('<button id="drinkOne" class="drink">Drink one glass of wine.</button>').insertAfter('#drinkingGame');
+
+    characterData[1].drunkenness -= 0;
+    //^hasty bug patchup - for some reason, before a -= operation is performed, .drunkenness is treated as a string?
+
+    $('#drinkOne').click(function() {
+        bobbyDrinks += 1;
+        characterData[1].drunkenness += 10;
+        rivalsTurn();
+        breathalyzer();
+    });
+    $('#drinkTwo').click(function() {
+        bobbyDrinks += 2;
+        characterData[1].drunkenness += 25;
+        rivalsTurn();
+        breathalyzer();
+    });
+    $('#drinkThree').click(function() {
+        bobbyDrinks += 3;
+        characterData[1].drunkenness += 45;
+        rivalsTurn();
+        breathalyzer();
+    });
+    $('#vomit').click(function() {
+        characterData[1].drunkenness -= 10;
+        rivalsTurn();
+        breathalyzer();
+    });
+}
+
+function gameover(){
+    $('#stage').html('GAME OVER');
+    $('#north').html(null);
+    $('#south').html(null);
+    $('#east').html(null);
+    $('#west').html(null);
+    northGoTo = null;
+    southGoTo = null;
+    eastGoTo = null;
+    westGoTo = null;
+}
+
+function fail(data) {
+    console.log('failed.');
+    console.log(data);
+}
+</script>
+
+    <style>
+    </style>
+
+
+			<p id="stage"></p>
+			<button id='north'></button>
+			<button id='south'></button>
+			<button id='east'></button>
+			<button id='west'></button>
+			<p id="drinkingGame"></p>
+		</body>
+	</html>
