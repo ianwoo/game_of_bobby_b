@@ -29,6 +29,8 @@ app.use(bodyParser()); // get information from html forms
 
 app.set('view engine', 'ejs'); // set up ejs for templating
 
+app.use(express.static('public')); //set up static javascript for game logic and game data
+
 // required for passport
 app.use(session({ secret: 'ilovescotch' })); // session secret
 app.use(passport.initialize());

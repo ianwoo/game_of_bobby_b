@@ -61,6 +61,15 @@ module.exports = function(app, passport) {
         });
     });
 
+    //pass high score to the backend
+    app.post('/game', isLoggedIn, function(req, res) {
+        var user            = req.user;
+        user.local.highscore = req.body.highscore;
+        user.save(function(err) {
+            res.redirect('/profile');
+        });
+    });
+
     // =====================================
     // LOGOUT ==============================
     // =====================================
