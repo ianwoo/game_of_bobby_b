@@ -41,6 +41,9 @@ function localStrat(User, passport) {
                         newUser.local.email = email;
                         newUser.local.password = newUser.generateHash(password);
 
+                        // set the user's base high score
+                        newUser.highscore = 0;
+
                         // save the user
                         newUser.save(function(err) {
                             if (err)

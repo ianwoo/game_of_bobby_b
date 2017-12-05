@@ -56,6 +56,9 @@ function facebookStrat(User, passport, configAuth) {//1
                         newUser.facebook.token = token;
                         newUser.facebook.displayName = profile.displayName;
 
+                        //set the user's base high score
+                        newUser.highscore = 0;
+
                         //save our user to the database
                         newUser.save(function(err) {//11(   //12{
                             if (err)

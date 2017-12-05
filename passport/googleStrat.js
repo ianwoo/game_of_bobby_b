@@ -57,6 +57,9 @@ function googleStrat(User, passport, configAuth) {
                         newUser.google.displayName = profile.displayName;
                         newUser.google.email = profile.emails[0].value; // pull the first email
 
+                        //set the user's base high score
+                        newUser.highscore = 0;
+
                         //save our user to the database
                         newUser.save(function(err) {
                             if (err)

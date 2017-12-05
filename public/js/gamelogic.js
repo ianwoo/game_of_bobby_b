@@ -39,6 +39,35 @@ function staging() {
         }
     }
 
+    //whore is pregnant flag for scoring()
+    if (currentNode == 15) {
+        console.log('whore is pregnant flagged on');
+        whorepregnant = true;
+    }
+
+    //renounce the throne to aegon flag for scoring()
+    if (currentNode == 39) {
+        renouncethrone = true;
+    }
+
+    //joffrey dies
+    if (currentNode == 35 || currentNode == 36) {
+        !characterData[10].alive;
+    }
+
+    //awkward conversation with jon
+    if (currentNode == 40) {
+        awkwardconvo = true;
+    }
+
+    //ned is hand flag for scoring(), and to set up the 2nd ned fight
+    if (currentNode == 2) {
+        var nedishand = true;
+        characterData[1].name = 'Lord Eddard Stark, Hand of the King';
+        characterData[1].fightScene = 34;
+        //no need to change homeNode or fightDirection because you cannot return to fight homeNode for 2nd Ned encounter
+    }
+
     $('#stage').html(sceneNodeData[currentNode].sceneStaging);
 
     if (sceneNodeData[currentNode].sceneNorth) {
@@ -74,35 +103,6 @@ function staging() {
         $('#west').hide();
     }
 
-    //whore is pregnant flag for scoring()
-    if (currentNode == 15) {
-        console.log('whore is pregnant flagged on');
-        whorepregnant = true;
-    }
-
-    //renounce the throne to aegon flag for scoring()
-    if (currentNode == 39) {
-        renouncethrone = true;
-    }
-
-    //joffrey dies
-    if (currentNode == 35 || currentNode == 36) {
-        !characterData[10].alive;
-    }
-
-    //awkward conversation with jon
-    if (currentNode == 40) {
-        awkwardconvo = true;
-    }
-
-    //ned is hand flag for scoring(), and to set up the 2nd ned fight
-    if (currentNode == 2) {
-        var nedishand = true;
-        characterData[1].name = 'Lord Eddard Stark, Hand of the King';
-        characterData[1].fightScene = 34;
-        //no need to change homeNode or fightDirection because you cannot return to fight homeNode for 2nd Ned encounter
-    }
-
     //cycle through all characters to find fight scenes
     for (var counter2 = 0; counter2 < characterData.length; counter2++){
         if (currentNode == characterData[counter2].fightScene && characterData[counter2].hitPoints > 0) {
@@ -122,6 +122,7 @@ function staging() {
 }
 
 function goNorth() {
+    //reset to navigation after 'continue' at end of drinking game
     $('#drinkingGame').html('');
     currentNode = northGoTo;
     staging();
@@ -291,78 +292,100 @@ function scoring(){
     //trigger cleganebowl
     if (cleganebowl) {
         score += 10000;
+        $('<p>you organized the Cleganebowl! +10,000 points</p>').insertBefore('#stage');
     }
     //trigger whore is pregnant convo
     if (whorepregnant) {
         score += 5000;
+        $('<p>you successfully roleplayed the most famous Bobby B meme. Good job. +5,000 points</p>').insertBefore('#stage');
     }
     //make ned the hand
     if (nedishand) {
         score += 3000;
+        $('<p>you made Ned the Hand of the King! +3,000 points</p>').insertBefore('#stage');
     }
     //renounce throne to aegon
     if (renouncethrone) {
         score -= 10000;
+        $('<p>you renounced the iron throne to Aegon / Jon. -10,000 points</p>').insertBefore('#stage');
     }
     //awkward conversation with jon
     if (awkwardconvo) {
         score -= 1;
+        $('<p>you made Jon Snow feel bad about himself. -1 point</p>').insertBefore('#stage');
     }    
     //ned dies
     if (characterData[1].hitPoints <= 0) {
         score -= 1000;
+        $('<p>you killed Ned! -1,000 points</p>').insertBefore('#stage');
     }
     //jaime dies
     if (characterData[2].hitPoints <= 0) {
-    !characterData[2].alive; //use .alive to flag for score readout
+        $('<p>you killed Jaime Lannister! He was an asshole. +1,000 points</p>').insertBefore('#stage');
+        $('<p>...you killed Jaime Lannister. He *WAS* an asshole. -1,000 points</p>').insertBefore('#stage');
     }
     //dothraki
     if (characterData[3].hitPoints <= 0) {
         score -= 100000;
+        $('<p>you typed characterData[0].hitPoints = whatever the fuck you wanted into the JavaScript Console, cheater. -100,000 points</p>').insertBefore('#stage');
     }
-    //tyrion(characterData[4]) - no score adjustment, use .alive flag for score readout
+    if (!characterData[4].alive) {
+        $('<p>you beat Tyrion at drinking!! impressive! +10,000 points</p>').insertBefore('#stage');
+        $('<p>you let Tyrion, probably everyones favorite character, die! -10,000 points</p>').insertBefore('#stage');
+    }
     //oberyn
     if (characterData[5].hitPoints <= 0) {
         score -= 5000;
+        $('<p>you killed Oberyn! -5,000 points</p>').insertBefore('#stage');
     }    
     //gendry
     if (characterData[6].hitPoints <= 0) {
         score -= 500;
+        $('<p>you killed Gendry! -500 points</p>').insertBefore('#stage');
     }
     //olly
     if (characterData[7].hitPoints <= 0) {
         score += 2000;
+        $('<p>you killed Olly! SWEET! fuck olly. +2,000 points</p>').insertBefore('#stage');
     }
     //nymeria
     if (characterData[8].hitPoints <= 0) {
         score -= 1000;
+        $('<p>you killed Nymeria! You probably had to cheat to do it too. -1,000 points</p>').insertBefore('#stage');
     }
     //arya
     if (characterData[9].hitPoints <= 0) {
         score -= 2000;
+        $('<p>you killed Arya! -2,000 points</p>').insertBefore('#stage');
     }
     //joffrey
     if (!characterData[10].alive) {
         score += 10000;
+        $('<p>you let that miserable little cunt Joffrey die. Good job! +10,000 points</p>').insertBefore('#stage');
     }
     //jon
     if (characterData[11].hitPoints <= 0) {
         score -= 10000;
+        $('<p>you killed Jon! -10,000 points</p>').insertBefore('#stage');
     }
     //aegon
-    if (characterData[12].hitpoints <= 0) {
+    if (characterData[12].hitPoints <= 0) {
         score -= 1000000;
+        $('<p>you killed Aegon Targaryen! cheater. -1,000,000 points</p>').insertBefore('#stage');
     }
     //the mountain in his prime
-    if (characterData[13].hitpoints <= 0) {
+    if (characterData[13].hitPoints <= 0) {
         score -= 10000000;
+        $('<p>you killed The Mountain in his prime?! you cheater! -1,000,000 points</p>').insertBefore('#stage');
     }
     //the zombie mountain
-    if (characterData[14].hitpoints <= 0) {
+    if (characterData[14].hitPoints <= 0) {
         score += 10000000;
+        $('<p>YOU BEAT THE GAME! CONGRATULATIONS! You are a winrar. +1,000,000 points</p>').insertBefore('#stage');
     }
     //jquery to format scoreboard, convert the jquery version into angular version for final project
     console.log(score);
+    $('<p>your final score is: ' + score + ' points.</p>').insertBefore('#stage');
     $.post('/game',{"highscore": score});
 }
 

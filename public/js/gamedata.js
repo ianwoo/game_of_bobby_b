@@ -2,7 +2,7 @@ var characterData = [
 //0
     {
     name: 'King Robert Baratheon',
-    hitPoints: 1000,
+    hitPoints: 100,
     hitChance: .75,
     weapon: 'warhammer',
     damage: 10,

@@ -1,19 +1,29 @@
 // app/routes.js
 module.exports = function(app, passport) {
 
-    // =====================================
-    // HOME PAGE (with login links) ========
-    // =====================================
+    //pass user schema for leaderboard
+    var User = require('../models/user.js');
+
+    // ============================================
+    // HOME PAGE (with login links and leaderboard)
+    // ============================================
     app.get('/', function(req, res) {
-        res.render('index.ejs'); // load the index.ejs file
+        //anonymous function to pass sorted user data for leaderboard
+        User.find().sort({highscore: -1}).then(function (results) {
+            for (var counter = 0; counter < results.length; counter++){
+                results[counter].local.password = 'hidden';
+                //results[counter].local.email = 'hidden'; CHANGE 'EMAIL' TO USERNAME!!!
+            }
+            console.log(results);
+            res.render('index.ejs', {leaderboard: results});
+        })
     });
 
-    // =====================================
-    // LOGIN ===============================
-    // =====================================
+    // ============================================
+    // LOGIN ======================================
+    // ============================================
     // show the login form
     app.get('/login', function(req, res) {
-
         // render the page and pass in any flash data if it exists
         res.render('login.ejs', { message: req.flash('loginMessage') }); 
     });
@@ -22,12 +32,12 @@ module.exports = function(app, passport) {
     app.post('/login', passport.authenticate('local-login', {
         successRedirect : '/profile', // redirect to the secure profile section
         failureRedirect : '/login', // redirect back to the signup page if there is an error
-        failureFlash : true // allow flash messages
+        failureFlash : true, // allow flash messages
     }));
 
-    // =====================================
-    // SIGNUP ==============================
-    // =====================================
+    // ============================================
+    // SIGNUP =====================================
+    // ============================================
     // show the signup form
     app.get('/signup', function(req, res) {
         // render the page and pass in any flash data if it exists
@@ -38,23 +48,30 @@ module.exports = function(app, passport) {
     app.post('/signup', passport.authenticate('local-signup', {
         successRedirect : '/profile', // redirect to the secure profile section
         failureRedirect : '/signup', // redirect back to the signup page if there is an error
-        failureFlash : true // allow flash messages
+        failureFlash : true, // allow flash messages
     }));
 
-    // =====================================
-    // PROFILE SECTION =====================
-    // =====================================
+    // ===========================================
+    // PROFILE SECTION ===========================
+    // ===========================================
     // we will want this protected so you have to be logged in to visit
     // we will use route middleware to verify this (the isLoggedIn function)
     app.get('/profile', isLoggedIn, function(req, res) {
+        User.find().sort({highscore: -1}).then(function (results) {
+            for (var counter = 0; counter < results.length; counter++){
+                results[counter].local.password = 'hidden';
+                //results[counter].local.email = 'hidden';
+            }
         res.render('profile.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
+            user : req.user, // get the user out of session and pass to template
+            leaderboard: results
+            });
+        })    
     });
 
-    // =====================================
-    // THE GAME ============================
-    // =====================================
+    // ===========================================
+    // THE GAME ==================================
+    // ===========================================
     app.get('/game', isLoggedIn, function(req, res) {
         res.render('game.ejs', {
             user : req.user
@@ -64,23 +81,25 @@ module.exports = function(app, passport) {
     //pass high score to the backend
     app.post('/game', isLoggedIn, function(req, res) {
         var user            = req.user;
-        user.local.highscore = req.body.highscore;
-        user.save(function(err) {
-            res.redirect('/profile');
-        });
+        if (req.body.highscore > user.highscore) {
+            user.highscore = req.body.highscore;
+            user.save(function(err) {
+                res.redirect('/profile');
+            });    
+        }
     });
 
-    // =====================================
-    // LOGOUT ==============================
-    // =====================================
+    // ===========================================
+    // LOGOUT ====================================
+    // ===========================================
     app.get('/logout', function(req, res) {
         req.logout();
         res.redirect('/');
     });
 
-    // =====================================
-    // FACEBOOK ROUTES =====================
-    // =====================================
+    // ===========================================
+    // FACEBOOK ROUTES ===========================
+    // ===========================================
     // route for facebook authentication and login
     app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
 
@@ -91,9 +110,9 @@ module.exports = function(app, passport) {
             failureRedirect : '/'
         }));
 
-    // =====================================
-    // GOOGLE ROUTES =======================
-    // =====================================
+    // ===========================================
+    // GOOGLE ROUTES =============================
+    // ===========================================
     // send to google to do the authentication
     // profile gets us their basic information including their name
     // email gets their emails
@@ -180,15 +199,15 @@ module.exports = function(app, passport) {
            res.redirect('/profile');
         });
     });
+
+    // route middleware to make sure a user is logged in
+    function isLoggedIn(req, res, next) {
+
+        // if user is authenticated in the session, carry on
+        if (req.isAuthenticated())
+            return next();
+
+        // if they aren't redirect them to the home page
+        res.redirect('/');
+    }
 };
-
-// route middleware to make sure a user is logged in
-function isLoggedIn(req, res, next) {
-
-    // if user is authenticated in the session, carry on
-    if (req.isAuthenticated())
-        return next();
-
-    // if they aren't redirect them to the home page
-    res.redirect('/');
-}

@@ -27,10 +27,26 @@
     </div>
 
 </div>
-
-<div id="leaderboard">
-    <
-</div>
+<h1>Leaderboard</h1>
+<ul class="list-group">
+    <% for (var counter = 0; counter < leaderboard.length; counter++){ %>
+        <li class="list-group-item">
+            <span class="label label-success"> <%= counter + 1 %> </span>
+            <% if (leaderboard[counter].local.email) {%>
+                <span class="label label-default"> <%= leaderboard[counter].local.email %> </span>
+                <% } %>
+            <% if (leaderboard[counter].facebook.displayName) {%>
+                <span class="label label-primary"> <%= leaderboard[counter].facebook.displayName %> </span>
+                <% } %>
+            <% if (leaderboard[counter].google.displayName) {%>
+                <span class="label label-danger"> <%= leaderboard[counter].google.displayName %> </span>
+                <% } %>
+            <span class="badge">
+                <%= leaderboard[counter].highscore %>
+            </span>
+        </li>
+        <% } %>
+</ul>
 
 </body>
 </html>

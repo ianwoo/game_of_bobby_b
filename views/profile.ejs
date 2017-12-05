@@ -36,8 +36,8 @@
                     <p>
                         <strong>id</strong>: <%= user._id %><br>
                         <strong>email</strong>: <%= user.local.email %><br>
-                        <strong>password</strong>: <%= user.local.password %>
-                        <strong>high score</strong>: <%= user.local.highscore %>
+                        <strong>password</strong>: <%= user.local.password %><br>
+                        <strong>high score</strong>: <%= user.highscore %>
                     </p>
 
                     <a href="/unlink/local" class="btn btn-default">Unlink</a>
@@ -59,7 +59,7 @@
                         <strong>id</strong>: <%= user.facebook.id %><br>
                         <strong>token</strong>: <%= user.facebook.token %><br>
                         <strong>displayName</strong>: <%= user.facebook.displayName %><br>
-                        <strong>high score</strong>: <%= user.local.highscore %><br>
+                        <strong>high score</strong>: <%= user.highscore %><br>
                     </p>
 
                     <a href="/unlink/facebook" class="btn btn-primary">Unlink</a>
@@ -83,7 +83,7 @@
                         <strong>token</strong>: <%= user.google.token %><br>
                         <strong>email</strong>: <%= user.google.email %><br>
                         <strong>name</strong>: <%= user.google.displayName %><br>
-                        <strong>high score</strong>: <%= user.local.highscore %><br>
+                        <strong>high score</strong>: <%= user.highscore %><br>
                     </p>
 
                     <a href="/unlink/google" class="btn btn-danger">Unlink</a>
@@ -96,5 +96,27 @@
     </div>
 
 </div>
+
+<h1>Leaderboard</h1>
+<ul class="list-group">
+    <% for (var counter = 0; counter < leaderboard.length; counter++){ %>
+        <li class="list-group-item">
+            <span class="label label-success"> <%= counter + 1 %> </span>
+            <% if (leaderboard[counter].local.email) {%>
+                <span class="label label-default"> <%= leaderboard[counter].local.email %> </span>
+                <% } %>
+            <% if (leaderboard[counter].facebook.displayName) {%>
+                <span class="label label-primary"> <%= leaderboard[counter].facebook.displayName %> </span>
+                <% } %>
+            <% if (leaderboard[counter].google.displayName) {%>
+                <span class="label label-danger"> <%= leaderboard[counter].google.displayName %> </span>
+                <% } %>
+            <span class="badge">
+                <%= leaderboard[counter].highscore %>
+            </span>
+        </li>
+        <% } %>
+</ul>
+
 </body>
 </html>
