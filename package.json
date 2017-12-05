@@ -1,7 +1,7 @@
 {
-  "name": "passportLab",
+  "name": "game of bobby b",
   "version": "1.0.0",
-  "description": "a general assembly lab for passport.js",
+  "description": "a silly, curse laden, and satirical javascript game based on the ASOIAF books by GRRM",
   "private": true,
   "main": "server.js",
   "author": "Ia",
